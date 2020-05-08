@@ -34,22 +34,22 @@
             this.label1 = new System.Windows.Forms.Label();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.sendTextBox = new System.Windows.Forms.TextBox();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.connectButton = new System.Windows.Forms.Button();
-            this.label4 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.sendFile = new System.Windows.Forms.Button();
+            this.sendTextBox = new System.Windows.Forms.TextBox();
+            this.connectButton = new System.Windows.Forms.Button();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.addressTextbox = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.clearButton = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.groupBox1.SuspendLayout();
-            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // logTextBox
@@ -68,7 +68,7 @@
             // portTextbox
             // 
             this.portTextbox.Font = new System.Drawing.Font("Times New Roman", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.portTextbox.Location = new System.Drawing.Point(75, 55);
+            this.portTextbox.Location = new System.Drawing.Point(85, 55);
             this.portTextbox.MaxLength = 6;
             this.portTextbox.Name = "portTextbox";
             this.portTextbox.Size = new System.Drawing.Size(132, 29);
@@ -99,6 +99,7 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.clearButton);
             this.tabPage1.Controls.Add(this.panel1);
             this.tabPage1.Controls.Add(this.connectButton);
             this.tabPage1.Controls.Add(this.logTextBox);
@@ -110,6 +111,52 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Main page";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // panel1
+            // 
+            this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel1.Controls.Add(this.sendFile);
+            this.panel1.Controls.Add(this.sendTextBox);
+            this.panel1.Location = new System.Drawing.Point(20, 394);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(743, 51);
+            this.panel1.TabIndex = 37;
+            // 
+            // sendFile
+            // 
+            this.sendFile.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("sendFile.BackgroundImage")));
+            this.sendFile.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.sendFile.Location = new System.Drawing.Point(14, 6);
+            this.sendFile.Name = "sendFile";
+            this.sendFile.Size = new System.Drawing.Size(48, 38);
+            this.sendFile.TabIndex = 40;
+            this.sendFile.UseVisualStyleBackColor = true;
+            // 
+            // sendTextBox
+            // 
+            this.sendTextBox.BackColor = System.Drawing.SystemColors.WindowFrame;
+            this.sendTextBox.Font = new System.Drawing.Font("Times New Roman", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.sendTextBox.ForeColor = System.Drawing.SystemColors.Window;
+            this.sendTextBox.Location = new System.Drawing.Point(69, 15);
+            this.sendTextBox.Margin = new System.Windows.Forms.Padding(4);
+            this.sendTextBox.Name = "sendTextBox";
+            this.sendTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.sendTextBox.Size = new System.Drawing.Size(668, 25);
+            this.sendTextBox.TabIndex = 37;
+            this.sendTextBox.TabStop = false;
+            this.sendTextBox.Text = "Написать сообщение...";
+            this.sendTextBox.Click += new System.EventHandler(this.sendTextBox_Click);
+            this.sendTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.sendTextBox_KeyDown);
+            // 
+            // connectButton
+            // 
+            this.connectButton.Location = new System.Drawing.Point(20, 16);
+            this.connectButton.Name = "connectButton";
+            this.connectButton.Size = new System.Drawing.Size(113, 26);
+            this.connectButton.TabIndex = 38;
+            this.connectButton.Text = "Connect";
+            this.connectButton.UseVisualStyleBackColor = true;
+            this.connectButton.Click += new System.EventHandler(this.connectButton_Click);
             // 
             // tabPage2
             // 
@@ -123,25 +170,18 @@
             this.tabPage2.Text = "Settings";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
-            // sendTextBox
+            // groupBox2
             // 
-            this.sendTextBox.BackColor = System.Drawing.SystemColors.WindowFrame;
-            this.sendTextBox.Font = new System.Drawing.Font("Times New Roman", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.sendTextBox.ForeColor = System.Drawing.SystemColors.Window;
-            this.sendTextBox.Location = new System.Drawing.Point(71, 27);
-            this.sendTextBox.Margin = new System.Windows.Forms.Padding(4);
-            this.sendTextBox.Name = "sendTextBox";
-            this.sendTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.sendTextBox.Size = new System.Drawing.Size(668, 25);
-            this.sendTextBox.TabIndex = 37;
-            this.sendTextBox.TabStop = false;
-            this.sendTextBox.Text = "Написать сообщение...";
-            this.sendTextBox.Click += new System.EventHandler(this.sendTextBox_Click);
-            this.sendTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.sendTextBox_KeyDown);
+            this.groupBox2.Location = new System.Drawing.Point(6, 133);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(235, 258);
+            this.groupBox2.TabIndex = 35;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Safety";
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.textBox1);
+            this.groupBox1.Controls.Add(this.addressTextbox);
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.portTextbox);
             this.groupBox1.Controls.Add(this.label2);
@@ -152,14 +192,14 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Socket address";
             // 
-            // label2
+            // addressTextbox
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 28);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(73, 21);
-            this.label2.TabIndex = 34;
-            this.label2.Text = "Address";
+            this.addressTextbox.Location = new System.Drawing.Point(85, 25);
+            this.addressTextbox.MaxLength = 16;
+            this.addressTextbox.Name = "addressTextbox";
+            this.addressTextbox.Size = new System.Drawing.Size(132, 29);
+            this.addressTextbox.TabIndex = 36;
+            this.addressTextbox.Text = "127.000.000.001";
             // 
             // label3
             // 
@@ -170,62 +210,27 @@
             this.label3.TabIndex = 35;
             this.label3.Text = "Port";
             // 
-            // textBox1
+            // label2
             // 
-            this.textBox1.Location = new System.Drawing.Point(75, 25);
-            this.textBox1.MaxLength = 16;
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(132, 29);
-            this.textBox1.TabIndex = 36;
-            this.textBox1.Text = "127.000.000.001";
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 28);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(73, 21);
+            this.label2.TabIndex = 34;
+            this.label2.Text = "Address";
             // 
-            // groupBox2
+            // clearButton
             // 
-            this.groupBox2.Location = new System.Drawing.Point(6, 133);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(235, 258);
-            this.groupBox2.TabIndex = 35;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Safety";
-            // 
-            // connectButton
-            // 
-            this.connectButton.Location = new System.Drawing.Point(20, 16);
-            this.connectButton.Name = "connectButton";
-            this.connectButton.Size = new System.Drawing.Size(113, 26);
-            this.connectButton.TabIndex = 38;
-            this.connectButton.Text = "Connect";
-            this.connectButton.UseVisualStyleBackColor = true;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label4.Location = new System.Drawing.Point(67, 4);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(40, 19);
-            this.label4.TabIndex = 39;
-            this.label4.Text = "Send";
-            // 
-            // panel1
-            // 
-            this.panel1.Controls.Add(this.sendFile);
-            this.panel1.Controls.Add(this.sendTextBox);
-            this.panel1.Controls.Add(this.label4);
-            this.panel1.Location = new System.Drawing.Point(20, 408);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(743, 63);
-            this.panel1.TabIndex = 37;
-            // 
-            // sendFile
-            // 
-            this.sendFile.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("sendFile.BackgroundImage")));
-            this.sendFile.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.sendFile.Location = new System.Drawing.Point(13, 14);
-            this.sendFile.Name = "sendFile";
-            this.sendFile.Size = new System.Drawing.Size(48, 38);
-            this.sendFile.TabIndex = 40;
-            this.sendFile.UseVisualStyleBackColor = true;
+            this.clearButton.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.clearButton.Location = new System.Drawing.Point(650, 53);
+            this.clearButton.Margin = new System.Windows.Forms.Padding(4);
+            this.clearButton.Name = "clearButton";
+            this.clearButton.Size = new System.Drawing.Size(113, 26);
+            this.clearButton.TabIndex = 39;
+            this.clearButton.TabStop = false;
+            this.clearButton.Text = "Clear";
+            this.clearButton.UseVisualStyleBackColor = true;
+            this.clearButton.Click += new System.EventHandler(this.clearButton_Click);
             // 
             // Form1
             // 
@@ -239,11 +244,11 @@
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -259,13 +264,13 @@
         private System.Windows.Forms.TextBox sendTextBox;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox addressTextbox;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button connectButton;
         private System.Windows.Forms.Button sendFile;
+        private System.Windows.Forms.Button clearButton;
     }
 }
 
