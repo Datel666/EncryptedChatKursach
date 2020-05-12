@@ -31,21 +31,22 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.disconnectButton = new System.Windows.Forms.Button();
+            this.startButton = new System.Windows.Forms.Button();
             this.clearButton = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.entertextLabel = new System.Windows.Forms.Label();
             this.sendFile = new System.Windows.Forms.Button();
             this.sendTextBox = new System.Windows.Forms.TextBox();
             this.logTextBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.addressTextbox = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.portTextbox = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.startButton = new System.Windows.Forms.Button();
-            this.disconnectButton = new System.Windows.Forms.Button();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -61,7 +62,7 @@
             this.tabControl1.Location = new System.Drawing.Point(12, 12);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(850, 511);
+            this.tabControl1.Size = new System.Drawing.Size(850, 775);
             this.tabControl1.TabIndex = 37;
             // 
             // tabPage1
@@ -75,10 +76,30 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 30);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(842, 477);
+            this.tabPage1.Size = new System.Drawing.Size(842, 741);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Main page";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // disconnectButton
+            // 
+            this.disconnectButton.Location = new System.Drawing.Point(157, 16);
+            this.disconnectButton.Name = "disconnectButton";
+            this.disconnectButton.Size = new System.Drawing.Size(135, 26);
+            this.disconnectButton.TabIndex = 41;
+            this.disconnectButton.Text = "Disconnect All";
+            this.disconnectButton.UseVisualStyleBackColor = true;
+            this.disconnectButton.Click += new System.EventHandler(this.disconnectButton_Click);
+            // 
+            // startButton
+            // 
+            this.startButton.Location = new System.Drawing.Point(20, 16);
+            this.startButton.Name = "startButton";
+            this.startButton.Size = new System.Drawing.Size(113, 26);
+            this.startButton.TabIndex = 40;
+            this.startButton.Text = "Start";
+            this.startButton.UseVisualStyleBackColor = true;
+            this.startButton.Click += new System.EventHandler(this.startButton_Click);
             // 
             // clearButton
             // 
@@ -96,12 +117,24 @@
             // panel1
             // 
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel1.Controls.Add(this.entertextLabel);
             this.panel1.Controls.Add(this.sendFile);
             this.panel1.Controls.Add(this.sendTextBox);
-            this.panel1.Location = new System.Drawing.Point(20, 394);
+            this.panel1.Location = new System.Drawing.Point(20, 672);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(743, 51);
             this.panel1.TabIndex = 37;
+            // 
+            // entertextLabel
+            // 
+            this.entertextLabel.AutoSize = true;
+            this.entertextLabel.BackColor = System.Drawing.SystemColors.Control;
+            this.entertextLabel.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.entertextLabel.Location = new System.Drawing.Point(73, 18);
+            this.entertextLabel.Name = "entertextLabel";
+            this.entertextLabel.Size = new System.Drawing.Size(155, 19);
+            this.entertextLabel.TabIndex = 41;
+            this.entertextLabel.Text = "Введите сообщение...";
             // 
             // sendFile
             // 
@@ -115,9 +148,9 @@
             // 
             // sendTextBox
             // 
-            this.sendTextBox.BackColor = System.Drawing.SystemColors.WindowFrame;
+            this.sendTextBox.BackColor = System.Drawing.SystemColors.Control;
             this.sendTextBox.Font = new System.Drawing.Font("Times New Roman", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.sendTextBox.ForeColor = System.Drawing.SystemColors.Window;
+            this.sendTextBox.ForeColor = System.Drawing.SystemColors.InfoText;
             this.sendTextBox.Location = new System.Drawing.Point(69, 15);
             this.sendTextBox.Margin = new System.Windows.Forms.Padding(4);
             this.sendTextBox.Name = "sendTextBox";
@@ -125,7 +158,8 @@
             this.sendTextBox.Size = new System.Drawing.Size(668, 25);
             this.sendTextBox.TabIndex = 37;
             this.sendTextBox.TabStop = false;
-            this.sendTextBox.Text = "Написать сообщение...";
+            this.sendTextBox.Click += new System.EventHandler(this.sendTextBox_Click);
+            this.sendTextBox.TextChanged += new System.EventHandler(this.sendTextBox_TextChanged);
             this.sendTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.sendTextBox_KeyDown);
             // 
             // logTextBox
@@ -137,7 +171,7 @@
             this.logTextBox.Name = "logTextBox";
             this.logTextBox.ReadOnly = true;
             this.logTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.logTextBox.Size = new System.Drawing.Size(743, 304);
+            this.logTextBox.Size = new System.Drawing.Size(743, 582);
             this.logTextBox.TabIndex = 31;
             this.logTextBox.TabStop = false;
             // 
@@ -162,6 +196,15 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Settings";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Location = new System.Drawing.Point(7, 132);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(200, 100);
+            this.groupBox2.TabIndex = 35;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Decryption";
             // 
             // groupBox1
             // 
@@ -214,40 +257,11 @@
             this.label2.TabIndex = 34;
             this.label2.Text = "Address";
             // 
-            // startButton
-            // 
-            this.startButton.Location = new System.Drawing.Point(20, 16);
-            this.startButton.Name = "startButton";
-            this.startButton.Size = new System.Drawing.Size(113, 26);
-            this.startButton.TabIndex = 40;
-            this.startButton.Text = "Start";
-            this.startButton.UseVisualStyleBackColor = true;
-            this.startButton.Click += new System.EventHandler(this.startButton_Click);
-            // 
-            // disconnectButton
-            // 
-            this.disconnectButton.Location = new System.Drawing.Point(157, 16);
-            this.disconnectButton.Name = "disconnectButton";
-            this.disconnectButton.Size = new System.Drawing.Size(135, 26);
-            this.disconnectButton.TabIndex = 41;
-            this.disconnectButton.Text = "Disconnect All";
-            this.disconnectButton.UseVisualStyleBackColor = true;
-            this.disconnectButton.Click += new System.EventHandler(this.disconnectButton_Click);
-            // 
-            // groupBox2
-            // 
-            this.groupBox2.Location = new System.Drawing.Point(7, 132);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(200, 100);
-            this.groupBox2.TabIndex = 35;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Decryption";
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(867, 531);
+            this.ClientSize = new System.Drawing.Size(867, 799);
             this.Controls.Add(this.tabControl1);
             this.Name = "Form1";
             this.Text = "Form1";
@@ -283,6 +297,7 @@
         private System.Windows.Forms.Button startButton;
         private System.Windows.Forms.Button disconnectButton;
         private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.Label entertextLabel;
     }
 }
 

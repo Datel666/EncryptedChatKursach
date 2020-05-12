@@ -5,15 +5,17 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
+using System.Collections.Generic;
+using System.Collections.Concurrent;
 
 namespace EncryptedChatKursach
 {
     public partial class Form1 : Form
     {
 
-        public bool connected = false;
+        private bool connected = false;
         private Thread client = null;
-
         private struct MyClient
         {
             public TcpClient client;
@@ -21,10 +23,20 @@ namespace EncryptedChatKursach
             public byte[] buffer;
             public StringBuilder data;
             public EventWaitHandle handle;
+        };
+        private struct file
+        {
+            public byte[] value;
+            public string extension;
         }
+        public int selectedfile = -1;
         private MyClient obj;
         private Task send = null;
         private bool exit = false;
+        public bool nickflag = false;
+        private string temps;
+        private ConcurrentDictionary<long, file> files = new ConcurrentDictionary<long, file>();
+        public long filescount = 0;
         public Form1()
         {
             InitializeComponent();
@@ -62,12 +74,14 @@ namespace EncryptedChatKursach
                     if (status)
                     {
                         connectButton.Text = "Disconnect";
-                        LogWrite("You are connected now");
+                        LogWrite("[/ You are now connected /]");
+                        TaskSend(nickTextbox.Text);
+                        
                     }
                     else
                     {
                         connectButton.Text = "Connect";
-                        LogWrite("You are disconnected now");
+                        LogWrite("[/ You are now disconnected /]");
                     }
                 });
             }
@@ -98,7 +112,47 @@ namespace EncryptedChatKursach
                     }
                     else
                     {
-                        LogWrite(obj.data.ToString());
+                        if (obj.data.ToString().Contains("connected") || obj.data.ToString().Contains("Client"))
+                        {
+                            LogWrite(obj.data.ToString());
+                        }
+                        else if (obj.data.ToString().Contains("File"))
+                        {
+                            MessageBox.Show("я тут");
+                            byte[] check = Encoding.UTF8.GetBytes(obj.data.ToString());
+                            string temp = obj.data.ToString().Remove(0, 4);
+                            string extension = temp.Substring(temp.Length - 3);
+                            temp.Remove(temp.Length - 4);
+                            byte[] filebuffer = Encoding.UTF8.GetBytes(temp);
+                            LogWrite(filebuffer.Length.ToString());
+                            file filee = new file();
+                            filee.value = filebuffer;
+                            filee.extension = extension;
+                            files.TryAdd(filescount,filee);
+                            this.filesList.BeginInvoke((MethodInvoker)(() => this.filesList.Items.Add($"{extension} File")));
+                            
+                        }
+                        else
+                        {
+                            if(obj.data.ToString().Contains("Server"))
+                            {
+                                MessageBox.Show("я тут2");
+                                LogWrite(obj.data.ToString().Split(':')[0] + ": " + obj.data.ToString().Split(':')[1]);
+                            }
+                            else 
+                            {
+                                if (aesRadio.Checked)
+                                {
+                                    MessageBox.Show("я тут3");
+                                    string[] parts = obj.data.ToString().Split(':');
+                                    byte[] buffer;
+                                    buffer = Encoding.UTF8.GetBytes(parts[1]);
+                                    string kek = Encoding.UTF8.GetString(buffer);
+                                    LogWrite(parts[0] + ": " + Encryption.Decrypt(kek, passwordTextbox.Text));
+                                }
+                                
+                            }
+                        }
                         obj.data.Clear();
                         obj.handle.Set();
                     }
@@ -138,7 +192,7 @@ namespace EncryptedChatKursach
                     }
                     catch (Exception ex)
                     {
-                        LogWrite(string.Format("[/ [0] /]", ex.Message));
+                        LogWrite(string.Format("[/ {0} /]", ex.Message));
                     }
                 }
                 obj.client.Close();
@@ -150,41 +204,6 @@ namespace EncryptedChatKursach
             }
         }
 
-        
-
-        private void connectButton_Click(object sender, EventArgs e)
-        {
-            if (connected)
-            {
-                obj.client.Close();
-            }
-            else if (client == null || !client.IsAlive)
-            {
-                bool localaddrResult = IPAddress.TryParse(addressTextbox.Text, out IPAddress localaddr);
-                if (!localaddrResult)
-                {
-                    LogWrite("Address is not valid");
-                }
-                bool portResult = int.TryParse(portTextbox.Text, out int port);
-                if (!portResult)
-                {
-                    LogWrite("Port is not valid");
-                }
-                else if (port < 0 || port > 65535)
-                {
-                    portResult = false;
-                    LogWrite("Port is out of range 0<=port<=65535");
-                }
-                if(localaddrResult &&portResult)
-                {
-                    client = new Thread(() => Connection(localaddr, port))
-                    {
-                        IsBackground = true
-                    };
-                client.Start();
-                }
-            }
-        }
 
         private void Write(IAsyncResult result)
         {
@@ -203,7 +222,48 @@ namespace EncryptedChatKursach
 
         private void Send(string msg)
         {
-            byte[] buffer = Encoding.UTF8.GetBytes(msg);
+            byte[] buffer;
+            if (nickflag ==false)
+            {
+                temps = nickTextbox.Text;
+                nickflag = true;
+            }
+            else
+            {
+                if (aesRadio.Checked)
+                {
+                    temps = Encryption.Encrypt(msg, passwordTextbox.Text);
+                }
+
+            }
+            
+            buffer = Encoding.UTF8.GetBytes(temps);
+            
+            if (obj.client.Connected)
+            {
+                try
+                {
+                    obj.stream.BeginWrite(buffer, 0, buffer.Length, new AsyncCallback(Write), null);
+                }
+                catch (Exception ex)
+                {
+                    LogWrite(string.Format("[/ {0} /]", ex.Message));
+                }
+            }
+        }
+
+        private void Send(byte[] msg,string ext)
+        {
+            byte[] extension = Encoding.UTF8.GetBytes(ext);
+            byte[] mark = Encoding.UTF8.GetBytes("File");
+            byte[] buffer = new byte[mark.Length + msg.Length + extension.Length];
+            Buffer.BlockCopy(mark, 0, buffer, 0, mark.Length);
+            Buffer.BlockCopy(msg, 0, buffer, mark.Length, msg.Length);
+            Buffer.BlockCopy(extension, 0, buffer, mark.Length + msg.Length, extension.Length);
+            LogWrite(buffer.Length.ToString());
+            string check = Encoding.UTF8.GetString(buffer);
+            byte[] chekkk = Encoding.UTF8.GetBytes(check);
+            LogWrite(chekkk.Length.ToString());
             if (obj.client.Connected)
             {
                 try
@@ -229,6 +289,19 @@ namespace EncryptedChatKursach
             }
         }
 
+        private void TaskSend(byte[] msg,string ext)
+        {
+            if (send == null || send.IsCompleted)
+            {
+                send = Task.Factory.StartNew(() => Send(msg,ext));
+            }
+            else
+            {
+                send.ContinueWith(antecendent => Send(msg,ext));
+            }
+        }
+
+
         private void sendTextBox_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
@@ -239,7 +312,7 @@ namespace EncryptedChatKursach
                 {
                     string msg = sendTextBox.Text;
                     sendTextBox.Clear();
-                    LogWrite("<- You -> " + msg);
+                    LogWrite("You: " + msg);
                     if (connected)
                     {
                         TaskSend(msg);
@@ -266,5 +339,141 @@ namespace EncryptedChatKursach
         {
             LogWrite();
         }
+
+        private void nickTextbox_MouseClick(object sender, MouseEventArgs e)
+        {
+            nickTextbox.Text = "";
+        }
+
+        private void connectButton_Click(object sender, EventArgs e)
+        {
+            if (connected)
+            {
+                obj.client.Close();
+            }
+            else if (client == null || !client.IsAlive)
+            {
+                bool localaddrResult = IPAddress.TryParse(addressTextbox.Text, out IPAddress localaddr);
+                if (!localaddrResult)
+                {
+                    LogWrite("Address is not valid");
+                }
+                bool portResult = int.TryParse(portTextbox.Text, out int port);
+                if (!portResult)
+                {
+                    LogWrite("Port is not valid");
+                }
+                else if (port < 0 || port > 65535)
+                {
+                    portResult = false;
+                    LogWrite("Port is out of range 0<=port<=65535");
+                }
+                if (localaddrResult && portResult)
+                {
+                    client = new Thread(() => Connection(localaddr, port))
+                    {
+                        IsBackground = true
+                    };
+                    client.Start();
+                }
+            }
+        }
+
+       
+
+        private void sendTextBox_MouseClick(object sender, MouseEventArgs e)
+        {
+            sendTextBox.Text = "";
+        }
+
+        private void sendFile_Click(object sender, EventArgs e)
+        {
+            if (fileNameTextbox.Text != "")
+            {
+                byte[] msg = File.ReadAllBytes(fileNameTextbox.Text);
+                string ext = Path.GetExtension(fileNameTextbox.Text);
+                TaskSend(msg, ext);
+                
+            }
+            else
+            {
+                MessageBox.Show("Choose file","Error");
+            }
+            
+        }
+
+        private void sendTextBox_TextChanged(object sender, EventArgs e)
+        {
+            sendTextBox.Text = "Enter message...";
+        }
+
+        private void sendMsg_Click(object sender, EventArgs e)
+        {
+            if (sendTextBox.Text.Length > 0)
+            {
+                string msg = sendTextBox.Text;
+                sendTextBox.Clear();
+                LogWrite("You: " + msg);
+                if (connected)
+                {
+                    TaskSend(msg);
+                }
+            }
+        }
+
+        private void chooseFilebtn_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog dg = new OpenFileDialog())
+            {
+                var result = dg.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    fileNameTextbox.Text = dg.FileName;
+                }
+                else
+                {
+                    fileNameTextbox.Text = "";
+                }
+            }
+        }
+
+        private void filesList_SelectedValueChanged(object sender, EventArgs e)
+        {
+            if (filesList.SelectedIndex != -1)
+            {
+                selectedfile = filesList.SelectedIndex;
+            }
+            else
+            {
+                selectedfile = -1;
+            }
+        }
+
+        private void filesList_DoubleClick(object sender, EventArgs e)
+        {
+            if (selectedfile != -1)
+            {
+                using (SaveFileDialog sfd = new SaveFileDialog())
+                {
+                    DialogResult sfdresult = sfd.ShowDialog();
+                    if (sfdresult == DialogResult.OK)
+                    {
+                        if (sfd.FileName != "" || sfd.FileName != null)
+                        {
+                            try
+                            {
+                                File.WriteAllBytes(sfd.FileName + "." + files[selectedfile].extension, files[selectedfile].value);
+                            }
+                            catch(Exception exx)
+                            {
+                                LogWrite(String.Format("[/ {0} /]", exx.Message));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        
     }
 }

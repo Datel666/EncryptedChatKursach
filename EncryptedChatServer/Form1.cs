@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
 namespace EncryptedChatServer
 {
@@ -16,12 +17,11 @@ namespace EncryptedChatServer
         private bool active = false;
         private Thread listener = null;
         private long id = 0;
-        
-        private struct MyClient 
+        private struct MyClient
         {
             public long id;
-            public string nick;
             public TcpClient client;
+            public string nick { get; set; }
             public NetworkStream stream;
             public byte[] buffer;
             public StringBuilder data;
@@ -29,13 +29,18 @@ namespace EncryptedChatServer
         };
         private ConcurrentDictionary<long, MyClient> list = new ConcurrentDictionary<long, MyClient>();
         private Task send = null;
+        
         private Thread disconnect = null;
         private bool exit = false;
+        string temps;
+        
 
         public Form1()
         {
             InitializeComponent();
         }
+
+
 
         private void LogWrite(string msg = null)
         {
@@ -80,6 +85,7 @@ namespace EncryptedChatServer
             }
         }
 
+
         private void Read(IAsyncResult result)
         {
             MyClient obj = (MyClient)result.AsyncState;
@@ -95,7 +101,7 @@ namespace EncryptedChatServer
                     LogWrite(string.Format("[/ {0} /]", ex.Message));
                 }
             }
-            if(bytes >0)
+            if (bytes > 0)
             {
                 obj.data.AppendFormat("{0}", Encoding.UTF8.GetString(obj.buffer, 0, bytes));
                 try
@@ -106,9 +112,43 @@ namespace EncryptedChatServer
                     }
                     else
                     {
-                        string msg = string.Format("{0} : {1}", obj.nick, obj.data);
-                        LogWrite(msg);
-                        TaskSend(msg, obj.id);
+                        if (obj.data.ToString().Contains("File"))
+                        {
+                            string msg = string.Format("{0} sended a file", list[obj.id].nick);
+                            LogWrite(msg);
+                            string tempo = obj.data.ToString();
+                            byte[] buffer = Encoding.UTF8.GetBytes(tempo);
+                            LogWrite(buffer.Length.ToString());
+                            TaskSend(buffer, obj.id);
+                        }
+                        else 
+                        {
+                            if (list[obj.id].nick == null)
+                            {
+                                string tempname = obj.data.ToString();
+                                MyClient cl = new MyClient();
+                                cl.id = list[obj.id].id;
+                                cl.client = list[obj.id].client;
+                                cl.stream = list[obj.id].stream;
+                                cl.buffer = list[obj.id].buffer;
+                                cl.data = list[obj.id].data;
+                                cl.handle = list[obj.id].handle;
+                                cl.nick = obj.data.ToString();
+                                list[obj.id] = cl;
+                                string msg = $"[Client {obj.id}] registered as [{obj.data.ToString()}]";
+                                LogWrite(msg);
+                                TaskSend(msg, obj.id);
+
+                            }
+                            else
+                            {
+                                string msg = string.Format("{0}:{1}", list[obj.id].nick, obj.data);
+                                LogWrite(msg);
+                                TaskSend(msg, obj.id);
+                            }
+                        }
+                        
+                        
                         obj.data.Clear();
                         obj.handle.Set();
                     }
@@ -117,6 +157,7 @@ namespace EncryptedChatServer
                 {
                     obj.data.Clear();
                     LogWrite(string.Format("[/ {0} /]", ex.Message));
+                    obj.handle.Set();
                 }
             }
             else
@@ -129,7 +170,7 @@ namespace EncryptedChatServer
         private void Connection(MyClient obj)
         {
             list.TryAdd(obj.id, obj);
-            string msg = string.Format("{0] connected", obj.nick);
+            string msg = string.Format("[/ Client {0} connected /]", obj.id);
             LogWrite(msg);
             TaskSend(msg, obj.id);
             while (obj.client.Connected)
@@ -139,19 +180,19 @@ namespace EncryptedChatServer
                     obj.stream.BeginRead(obj.buffer, 0, obj.buffer.Length, new AsyncCallback(Read), obj);
                     obj.handle.WaitOne();
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     LogWrite(string.Format("[/ {0} /]", ex.Message));
                 }
             }
             obj.client.Close();
-            msg = string.Format("{0} disconnected", obj.nick);
+            msg = string.Format("[/ Client {0} disconnected /]", obj.id);
             LogWrite(msg);
             TaskSend(msg, obj.id);
             list.TryRemove(obj.id, out MyClient tmp);
         }
 
-        private void Listener(IPAddress localaddr,int port)
+        private void Listener(IPAddress localaddr, int port)
         {
             TcpListener listener = null;
             try
@@ -167,6 +208,7 @@ namespace EncryptedChatServer
                         {
                             MyClient obj = new MyClient();
                             obj.id = id;
+                            obj.nick = null;
                             obj.client = listener.AcceptTcpClient();
                             obj.stream = obj.client.GetStream();
                             obj.buffer = new byte[obj.client.ReceiveBufferSize];
@@ -204,6 +246,40 @@ namespace EncryptedChatServer
             }
         }
 
+        private void StartButton_Click(object sender, EventArgs e)
+        {
+            if (active)
+            {
+                active = false;
+            }
+            else if (listener == null || !listener.IsAlive)
+            {
+                bool localaddrResult = IPAddress.TryParse(addressTextbox.Text, out IPAddress localaddr);
+                if (!localaddrResult)
+                {
+                    LogWrite("[/ Address is not valid /]");
+                }
+                bool portResult = int.TryParse(portTextbox.Text, out int port);
+                if (!portResult)
+                {
+                    LogWrite("[/ Port number is not valid /]");
+                }
+                else if (port < 0 || port > 65535)
+                {
+                    portResult = false;
+                    LogWrite("[/ Port number is out of range /]");
+                }
+                if (localaddrResult && portResult)
+                {
+                    listener = new Thread(() => Listener(localaddr, port))
+                    {
+                        IsBackground = true
+                    };
+                    listener.Start();
+                }
+            }
+        }
+
         private void Write(IAsyncResult result)
         {
             MyClient obj = (MyClient)result.AsyncState;
@@ -225,7 +301,40 @@ namespace EncryptedChatServer
             byte[] buffer = Encoding.UTF8.GetBytes(msg);
             foreach (KeyValuePair<long, MyClient> obj in list)
             {
-                if (id != obj.Value.id && obj.Value.client.Connected)
+                // id != obj.Value.id &&
+                if ( obj.Value.client.Connected)
+                {
+                    try
+                    {
+                        obj.Value.stream.BeginWrite(buffer, 0, buffer.Length, new AsyncCallback(Write), obj.Value);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogWrite(string.Format("[/ {0} /]", ex.Message));
+                    }
+                }
+            }
+        }
+
+        private void TaskSend(byte[] msg, long id = -1)
+        {
+            if (send == null || send.IsCompleted)
+            {
+                send = Task.Factory.StartNew(() => Send(msg, id));
+            }
+            else
+            {
+                send.ContinueWith(antecendent => Send(msg, id));
+            }
+        }
+
+        private void Send(byte[] msg, long id = -1)
+        {
+            byte[] buffer = msg;
+            foreach (KeyValuePair<long, MyClient> obj in list)
+            {
+                // id != obj.Value.id &&
+                if (obj.Value.client.Connected)
                 {
                     try
                     {
@@ -250,6 +359,15 @@ namespace EncryptedChatServer
                 send.ContinueWith(antecendent => Send(msg, id));
             }
         }
+
+        private void Disconnect()
+        {
+            foreach (KeyValuePair<long, MyClient> obj in list)
+            {
+                obj.Value.client.Close();
+            }
+        }
+
 
         private void startButton_Click(object sender, EventArgs e)
         {
@@ -295,19 +413,13 @@ namespace EncryptedChatServer
                 {
                     string msg = sendTextBox.Text;
                     sendTextBox.Clear();
-                    LogWrite("Server (You):" + msg);
+                    LogWrite("Server: " + msg);
                     TaskSend("Server:" + msg);
                 }
             }
         }
 
-        private void Disconnect()
-        {
-            foreach (KeyValuePair<long, MyClient> obj in list)
-            {
-                obj.Value.client.Close();
-            }
-        }
+        
 
         private void disconnectButton_Click(object sender, EventArgs e)
         {
@@ -338,6 +450,19 @@ namespace EncryptedChatServer
         private void clearButton_Click(object sender, EventArgs e)
         {
             LogWrite();
+        }
+
+        private void sendTextBox_Click(object sender, EventArgs e)
+        {
+            entertextLabel.Text = "";
+        }
+
+        private void sendTextBox_TextChanged(object sender, EventArgs e)
+        {
+            if (sendTextBox.Text == "")
+            {
+                entertextLabel.Text = "Введите сообщение...";
+            }
         }
     }
 }
