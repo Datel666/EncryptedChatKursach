@@ -6,8 +6,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
-using System.Collections.Generic;
 using System.Collections.Concurrent;
+using System.Runtime.InteropServices.WindowsRuntime;
+using System.Windows;
+
 
 namespace EncryptedChatKursach
 {
@@ -87,7 +89,7 @@ namespace EncryptedChatKursach
             }
         }
 
-        private void Read(IAsyncResult result)
+        private async void Read(IAsyncResult result)
         {
             int bytes = 0;
             if (obj.client.Connected)
@@ -127,13 +129,14 @@ namespace EncryptedChatKursach
                             string temp = fullb64message.Remove(0, extension.Length + 4);
                             byte[] utf8bytes = Encoding.UTF8.GetBytes(temp);
                             string utf8stringwhy = Encoding.UTF8.GetString(utf8bytes);
-                            string decodedmsg = Encryption.Decrypt(utf8stringwhy, passwordTextbox.Text);
+                            string decodedmsg = await Encryption.Decrypt(utf8stringwhy, passwordTextbox.Text);
                             byte[] check = Convert.FromBase64String(decodedmsg);
 
                             file filee = new file();
                             filee.value = check;
                             filee.extension = extension;
                             files.TryAdd(filescount,filee);
+                            filescount++;
                             this.filesList.BeginInvoke((MethodInvoker)(() => this.filesList.Items.Add($"{extension} File")));
                             LogWrite("[System]: new file arrived, double click on it to perform local save.");
                             
@@ -258,7 +261,7 @@ namespace EncryptedChatKursach
             }
         }
 
-        private void Send(string msg)
+        private async void Send(string msg)
         {
             byte[] buffer;
             if (nickflag == false)
@@ -270,7 +273,7 @@ namespace EncryptedChatKursach
             {
                 if (aesRadio.Checked)
                 {
-                    temps = Encryption.Encrypt(msg, passwordTextbox.Text);
+                    temps = await Encryption.Encrypt(msg, passwordTextbox.Text);
                 }
 
             }
@@ -385,24 +388,38 @@ namespace EncryptedChatKursach
 
         
 
-        private void sendFile_Click(object sender, EventArgs e)
+        private async void sendFile_Click(object sender, EventArgs e)
         {
-            if (fileNameTextbox.Text != "")
+            try
             {
-                bool flag = true;
-                byte[] msg = File.ReadAllBytes(fileNameTextbox.Text);
-                string ext = Path.GetExtension(fileNameTextbox.Text);
-                string tempmessage = Convert.ToBase64String(msg);
-                string encodedpart = Encryption.Encrypt(tempmessage, passwordTextbox.Text);
-                string encodedmessage = ext + "File" + encodedpart;
-                TaskSend(encodedmessage,flag);
-                
+                if (fileNameTextbox.Text != "")
+                {
+                    bool flag = true;
+                    byte[] msg;
+                    using (FileStream stream = File.Open(string.Format(@"{0}", fileNameTextbox.Text), FileMode.Open))
+                    {
+                        msg = new byte[stream.Length];
+                        await stream.ReadAsync(msg, 0, (int)stream.Length);
+                        string ext = Path.GetExtension(fileNameTextbox.Text);
+                        string tempmessage = Convert.ToBase64String(msg);
+                        string encodedpart = await Encryption.Encrypt(tempmessage, passwordTextbox.Text);
+                        string encodedmessage = ext + "File" + encodedpart;
+                        TaskSend(encodedmessage, flag);
+                        fileNameTextbox.Text = "";
+                        LogWrite("[System]: sending file...");
+                    } 
+                }
+                else
+                {
+                    MessageBox.Show("Choose file", "Error");
+                }
+
             }
-            else
+            catch
             {
-                MessageBox.Show("Choose file","Error");
+                MessageBox.Show("File is too big", "Error");
+                fileNameTextbox.Text = "";
             }
-            
         }
 
 
@@ -448,7 +465,7 @@ namespace EncryptedChatKursach
             }
         }
 
-        private void filesList_DoubleClick(object sender, EventArgs e)
+        private async void filesList_DoubleClick(object sender, EventArgs e)
         {
             try
             {
@@ -464,7 +481,13 @@ namespace EncryptedChatKursach
                             {
                                 try
                                 {
-                                    File.WriteAllBytes(sfd.FileName + files[selectedfile].extension, files[selectedfile].value);
+                                    //File.WriteAllBytes(sfd.FileName + files[selectedfile].extension, files[selectedfile].value);
+                                    using (FileStream sourceStream = new FileStream(sfd.FileName + files[selectedfile].extension,
+                                                            FileMode.Append, FileAccess.Write, FileShare.None,
+                                                            bufferSize: 4096, useAsync: true))
+                                    {
+                                        await sourceStream.WriteAsync(files[selectedfile].value, 0, files[selectedfile].value.Length);
+                                    };
                                 }
                                 catch (Exception exx)
                                 {
@@ -486,6 +509,7 @@ namespace EncryptedChatKursach
         {
             files.Clear();
             filesList.Items.Clear();
+            filescount = 0;
         }
     }
 }
