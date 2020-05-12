@@ -112,13 +112,17 @@ namespace EncryptedChatServer
                     }
                     else
                     {
-                        if (obj.data.ToString().Contains("File"))
+                        string temp = obj.data.ToString();
+                        bool kek = temp.Contains("File");
+                        if (kek)
                         {
-                            string msg = string.Format("{0} sended a file", list[obj.id].nick);
+                            
+                            string getextension = temp.Substring(0, temp.IndexOf("File"));
+                            string msg = string.Format("Server: {0} sended a {1} file", list[obj.id].nick,getextension);
+                            TaskSend(msg, obj.id);
                             LogWrite(msg);
                             string tempo = obj.data.ToString();
                             byte[] buffer = Encoding.UTF8.GetBytes(tempo);
-                            LogWrite(buffer.Length.ToString());
                             TaskSend(buffer, obj.id);
                         }
                         else 
@@ -142,6 +146,7 @@ namespace EncryptedChatServer
                             }
                             else
                             {
+                                
                                 string msg = string.Format("{0}:{1}", list[obj.id].nick, obj.data);
                                 LogWrite(msg);
                                 TaskSend(msg, obj.id);
@@ -301,8 +306,8 @@ namespace EncryptedChatServer
             byte[] buffer = Encoding.UTF8.GetBytes(msg);
             foreach (KeyValuePair<long, MyClient> obj in list)
             {
-                // id != obj.Value.id &&
-                if ( obj.Value.client.Connected)
+                
+                if (id != obj.Value.id && obj.Value.client.Connected)
                 {
                     try
                     {
@@ -333,8 +338,8 @@ namespace EncryptedChatServer
             byte[] buffer = msg;
             foreach (KeyValuePair<long, MyClient> obj in list)
             {
-                // id != obj.Value.id &&
-                if (obj.Value.client.Connected)
+                
+                if (id != obj.Value.id && obj.Value.client.Connected)
                 {
                     try
                     {
@@ -452,16 +457,14 @@ namespace EncryptedChatServer
             LogWrite();
         }
 
-        private void sendTextBox_Click(object sender, EventArgs e)
+        private void sendMsg_Click(object sender, EventArgs e)
         {
-            entertextLabel.Text = "";
-        }
-
-        private void sendTextBox_TextChanged(object sender, EventArgs e)
-        {
-            if (sendTextBox.Text == "")
+            if (sendTextBox.Text.Length > 0)
             {
-                entertextLabel.Text = "Введите сообщение...";
+                string msg = sendTextBox.Text;
+                sendTextBox.Clear();
+                LogWrite("Server: " + msg);
+                TaskSend("Server:" + msg);
             }
         }
     }

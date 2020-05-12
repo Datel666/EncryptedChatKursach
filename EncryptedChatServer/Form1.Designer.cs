@@ -28,15 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.disconnectButton = new System.Windows.Forms.Button();
             this.startButton = new System.Windows.Forms.Button();
             this.clearButton = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.entertextLabel = new System.Windows.Forms.Label();
-            this.sendFile = new System.Windows.Forms.Button();
             this.sendTextBox = new System.Windows.Forms.TextBox();
             this.logTextBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -47,6 +44,8 @@
             this.label3 = new System.Windows.Forms.Label();
             this.portTextbox = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
+            this.sendMsg = new System.Windows.Forms.Button();
+            this.label4 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -67,6 +66,7 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.label4);
             this.tabPage1.Controls.Add(this.disconnectButton);
             this.tabPage1.Controls.Add(this.startButton);
             this.tabPage1.Controls.Add(this.clearButton);
@@ -117,49 +117,25 @@
             // panel1
             // 
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel1.Controls.Add(this.entertextLabel);
-            this.panel1.Controls.Add(this.sendFile);
+            this.panel1.Controls.Add(this.sendMsg);
             this.panel1.Controls.Add(this.sendTextBox);
             this.panel1.Location = new System.Drawing.Point(20, 672);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(743, 51);
+            this.panel1.Size = new System.Drawing.Size(743, 63);
             this.panel1.TabIndex = 37;
-            // 
-            // entertextLabel
-            // 
-            this.entertextLabel.AutoSize = true;
-            this.entertextLabel.BackColor = System.Drawing.SystemColors.Control;
-            this.entertextLabel.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.entertextLabel.Location = new System.Drawing.Point(73, 18);
-            this.entertextLabel.Name = "entertextLabel";
-            this.entertextLabel.Size = new System.Drawing.Size(155, 19);
-            this.entertextLabel.TabIndex = 41;
-            this.entertextLabel.Text = "Введите сообщение...";
-            // 
-            // sendFile
-            // 
-            this.sendFile.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("sendFile.BackgroundImage")));
-            this.sendFile.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.sendFile.Location = new System.Drawing.Point(14, 6);
-            this.sendFile.Name = "sendFile";
-            this.sendFile.Size = new System.Drawing.Size(48, 38);
-            this.sendFile.TabIndex = 40;
-            this.sendFile.UseVisualStyleBackColor = true;
             // 
             // sendTextBox
             // 
             this.sendTextBox.BackColor = System.Drawing.SystemColors.Control;
             this.sendTextBox.Font = new System.Drawing.Font("Times New Roman", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.sendTextBox.ForeColor = System.Drawing.SystemColors.InfoText;
-            this.sendTextBox.Location = new System.Drawing.Point(69, 15);
+            this.sendTextBox.Location = new System.Drawing.Point(4, 4);
             this.sendTextBox.Margin = new System.Windows.Forms.Padding(4);
             this.sendTextBox.Name = "sendTextBox";
             this.sendTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.sendTextBox.Size = new System.Drawing.Size(668, 25);
+            this.sendTextBox.Size = new System.Drawing.Size(723, 25);
             this.sendTextBox.TabIndex = 37;
             this.sendTextBox.TabStop = false;
-            this.sendTextBox.Click += new System.EventHandler(this.sendTextBox_Click);
-            this.sendTextBox.TextChanged += new System.EventHandler(this.sendTextBox_TextChanged);
             this.sendTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.sendTextBox_KeyDown);
             // 
             // logTextBox
@@ -171,7 +147,7 @@
             this.logTextBox.Name = "logTextBox";
             this.logTextBox.ReadOnly = true;
             this.logTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.logTextBox.Size = new System.Drawing.Size(743, 582);
+            this.logTextBox.Size = new System.Drawing.Size(743, 556);
             this.logTextBox.TabIndex = 31;
             this.logTextBox.TabStop = false;
             // 
@@ -192,7 +168,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 30);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(842, 477);
+            this.tabPage2.Size = new System.Drawing.Size(842, 741);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Settings";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -257,6 +233,27 @@
             this.label2.TabIndex = 34;
             this.label2.Text = "Address";
             // 
+            // sendMsg
+            // 
+            this.sendMsg.Font = new System.Drawing.Font("Times New Roman", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.sendMsg.Location = new System.Drawing.Point(554, 35);
+            this.sendMsg.Name = "sendMsg";
+            this.sendMsg.Size = new System.Drawing.Size(173, 23);
+            this.sendMsg.TabIndex = 42;
+            this.sendMsg.Text = "Send";
+            this.sendMsg.UseVisualStyleBackColor = true;
+            this.sendMsg.Click += new System.EventHandler(this.sendMsg_Click);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label4.Location = new System.Drawing.Point(21, 650);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(97, 19);
+            this.label4.TabIndex = 42;
+            this.label4.Text = "Text input field";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -284,7 +281,6 @@
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.Button clearButton;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Button sendFile;
         private System.Windows.Forms.TextBox sendTextBox;
         private System.Windows.Forms.TextBox logTextBox;
         private System.Windows.Forms.Label label1;
@@ -297,7 +293,8 @@
         private System.Windows.Forms.Button startButton;
         private System.Windows.Forms.Button disconnectButton;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.Label entertextLabel;
+        private System.Windows.Forms.Button sendMsg;
+        private System.Windows.Forms.Label label4;
     }
 }
 

@@ -33,13 +33,19 @@
             this.label1 = new System.Windows.Forms.Label();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.clearFilesList = new System.Windows.Forms.Button();
+            this.tabControl2 = new System.Windows.Forms.TabControl();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.sendMsg = new System.Windows.Forms.Button();
+            this.sendTextBox = new System.Windows.Forms.TextBox();
+            this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.fileNameTextbox = new System.Windows.Forms.TextBox();
+            this.chooseFilebtn = new System.Windows.Forms.Button();
             this.sendFilebtn = new System.Windows.Forms.Button();
+            this.clearFilesList = new System.Windows.Forms.Button();
             this.filesList = new System.Windows.Forms.ListBox();
             this.connectButton = new System.Windows.Forms.Button();
             this.nickTextbox = new System.Windows.Forms.TextBox();
             this.clearButton = new System.Windows.Forms.Button();
-            this.sendTextBox = new System.Windows.Forms.TextBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.label4 = new System.Windows.Forms.Label();
@@ -52,20 +58,14 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-            this.tabControl2 = new System.Windows.Forms.TabControl();
-            this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.sendMsg = new System.Windows.Forms.Button();
-            this.chooseFilebtn = new System.Windows.Forms.Button();
-            this.fileNameTextbox = new System.Windows.Forms.TextBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
-            this.tabPage2.SuspendLayout();
-            this.groupBox2.SuspendLayout();
-            this.groupBox1.SuspendLayout();
             this.tabControl2.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.tabPage4.SuspendLayout();
+            this.tabPage2.SuspendLayout();
+            this.groupBox2.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // logTextBox
@@ -131,17 +131,88 @@
             this.tabPage1.Text = "Main page";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
-            // clearFilesList
+            // tabControl2
             // 
-            this.clearFilesList.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.clearFilesList.Location = new System.Drawing.Point(806, 386);
-            this.clearFilesList.Margin = new System.Windows.Forms.Padding(4);
-            this.clearFilesList.Name = "clearFilesList";
-            this.clearFilesList.Size = new System.Drawing.Size(192, 26);
-            this.clearFilesList.TabIndex = 43;
-            this.clearFilesList.TabStop = false;
-            this.clearFilesList.Text = "Clear";
-            this.clearFilesList.UseVisualStyleBackColor = true;
+            this.tabControl2.Controls.Add(this.tabPage3);
+            this.tabControl2.Controls.Add(this.tabPage4);
+            this.tabControl2.Font = new System.Drawing.Font("Times New Roman", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.tabControl2.Location = new System.Drawing.Point(20, 386);
+            this.tabControl2.Name = "tabControl2";
+            this.tabControl2.SelectedIndex = 0;
+            this.tabControl2.Size = new System.Drawing.Size(757, 96);
+            this.tabControl2.TabIndex = 44;
+            // 
+            // tabPage3
+            // 
+            this.tabPage3.Controls.Add(this.sendMsg);
+            this.tabPage3.Controls.Add(this.sendTextBox);
+            this.tabPage3.Location = new System.Drawing.Point(4, 23);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage3.Size = new System.Drawing.Size(749, 69);
+            this.tabPage3.TabIndex = 0;
+            this.tabPage3.Text = "Chat";
+            this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // sendMsg
+            // 
+            this.sendMsg.Font = new System.Drawing.Font("Times New Roman", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.sendMsg.Location = new System.Drawing.Point(564, 39);
+            this.sendMsg.Name = "sendMsg";
+            this.sendMsg.Size = new System.Drawing.Size(173, 23);
+            this.sendMsg.TabIndex = 38;
+            this.sendMsg.Text = "Send";
+            this.sendMsg.UseVisualStyleBackColor = true;
+            this.sendMsg.Click += new System.EventHandler(this.sendMsg_Click);
+            // 
+            // sendTextBox
+            // 
+            this.sendTextBox.BackColor = System.Drawing.SystemColors.Control;
+            this.sendTextBox.Font = new System.Drawing.Font("Times New Roman", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.sendTextBox.ForeColor = System.Drawing.SystemColors.InfoText;
+            this.sendTextBox.Location = new System.Drawing.Point(4, 7);
+            this.sendTextBox.Margin = new System.Windows.Forms.Padding(4);
+            this.sendTextBox.Name = "sendTextBox";
+            this.sendTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.sendTextBox.Size = new System.Drawing.Size(733, 25);
+            this.sendTextBox.TabIndex = 37;
+            this.sendTextBox.TabStop = false;
+            this.sendTextBox.Click += new System.EventHandler(this.sendTextBox_Click);
+            this.sendTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.sendTextBox_KeyDown);
+            // 
+            // tabPage4
+            // 
+            this.tabPage4.Controls.Add(this.fileNameTextbox);
+            this.tabPage4.Controls.Add(this.chooseFilebtn);
+            this.tabPage4.Controls.Add(this.sendFilebtn);
+            this.tabPage4.Location = new System.Drawing.Point(4, 23);
+            this.tabPage4.Name = "tabPage4";
+            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage4.Size = new System.Drawing.Size(749, 69);
+            this.tabPage4.TabIndex = 1;
+            this.tabPage4.Text = "FileManager";
+            this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // fileNameTextbox
+            // 
+            this.fileNameTextbox.Enabled = false;
+            this.fileNameTextbox.Font = new System.Drawing.Font("Times New Roman", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.fileNameTextbox.Location = new System.Drawing.Point(6, 38);
+            this.fileNameTextbox.Name = "fileNameTextbox";
+            this.fileNameTextbox.Size = new System.Drawing.Size(605, 25);
+            this.fileNameTextbox.TabIndex = 42;
+            // 
+            // chooseFilebtn
+            // 
+            this.chooseFilebtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.chooseFilebtn.Font = new System.Drawing.Font("Times New Roman", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.chooseFilebtn.Location = new System.Drawing.Point(6, 6);
+            this.chooseFilebtn.Name = "chooseFilebtn";
+            this.chooseFilebtn.Size = new System.Drawing.Size(105, 29);
+            this.chooseFilebtn.TabIndex = 41;
+            this.chooseFilebtn.Text = "Choose file";
+            this.chooseFilebtn.UseVisualStyleBackColor = true;
+            this.chooseFilebtn.Click += new System.EventHandler(this.chooseFilebtn_Click);
             // 
             // sendFilebtn
             // 
@@ -154,6 +225,19 @@
             this.sendFilebtn.Text = "Send file";
             this.sendFilebtn.UseVisualStyleBackColor = true;
             this.sendFilebtn.Click += new System.EventHandler(this.sendFile_Click);
+            // 
+            // clearFilesList
+            // 
+            this.clearFilesList.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.clearFilesList.Location = new System.Drawing.Point(806, 386);
+            this.clearFilesList.Margin = new System.Windows.Forms.Padding(4);
+            this.clearFilesList.Name = "clearFilesList";
+            this.clearFilesList.Size = new System.Drawing.Size(192, 26);
+            this.clearFilesList.TabIndex = 43;
+            this.clearFilesList.TabStop = false;
+            this.clearFilesList.Text = "Clear";
+            this.clearFilesList.UseVisualStyleBackColor = true;
+            this.clearFilesList.Click += new System.EventHandler(this.clearFilesList_Click);
             // 
             // filesList
             // 
@@ -198,24 +282,6 @@
             this.clearButton.Text = "Clear";
             this.clearButton.UseVisualStyleBackColor = true;
             this.clearButton.Click += new System.EventHandler(this.clearButton_Click);
-            // 
-            // sendTextBox
-            // 
-            this.sendTextBox.BackColor = System.Drawing.SystemColors.Control;
-            this.sendTextBox.Font = new System.Drawing.Font("Times New Roman", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.sendTextBox.ForeColor = System.Drawing.SystemColors.InfoText;
-            this.sendTextBox.Location = new System.Drawing.Point(4, 7);
-            this.sendTextBox.Margin = new System.Windows.Forms.Padding(4);
-            this.sendTextBox.Name = "sendTextBox";
-            this.sendTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.sendTextBox.Size = new System.Drawing.Size(733, 25);
-            this.sendTextBox.TabIndex = 37;
-            this.sendTextBox.TabStop = false;
-            this.sendTextBox.Text = "Enter message...";
-            this.sendTextBox.Click += new System.EventHandler(this.sendTextBox_Click);
-            this.sendTextBox.MouseClick += new System.Windows.Forms.MouseEventHandler(this.sendTextBox_MouseClick);
-            this.sendTextBox.TextChanged += new System.EventHandler(this.sendTextBox_TextChanged);
-            this.sendTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.sendTextBox_KeyDown);
             // 
             // tabPage2
             // 
@@ -334,74 +400,6 @@
             this.label2.TabIndex = 34;
             this.label2.Text = "Address";
             // 
-            // tabControl2
-            // 
-            this.tabControl2.Controls.Add(this.tabPage3);
-            this.tabControl2.Controls.Add(this.tabPage4);
-            this.tabControl2.Font = new System.Drawing.Font("Times New Roman", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.tabControl2.Location = new System.Drawing.Point(20, 386);
-            this.tabControl2.Name = "tabControl2";
-            this.tabControl2.SelectedIndex = 0;
-            this.tabControl2.Size = new System.Drawing.Size(757, 96);
-            this.tabControl2.TabIndex = 44;
-            // 
-            // tabPage3
-            // 
-            this.tabPage3.Controls.Add(this.sendMsg);
-            this.tabPage3.Controls.Add(this.sendTextBox);
-            this.tabPage3.Location = new System.Drawing.Point(4, 23);
-            this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(749, 69);
-            this.tabPage3.TabIndex = 0;
-            this.tabPage3.Text = "Chat";
-            this.tabPage3.UseVisualStyleBackColor = true;
-            // 
-            // tabPage4
-            // 
-            this.tabPage4.Controls.Add(this.fileNameTextbox);
-            this.tabPage4.Controls.Add(this.chooseFilebtn);
-            this.tabPage4.Controls.Add(this.sendFilebtn);
-            this.tabPage4.Location = new System.Drawing.Point(4, 23);
-            this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(749, 69);
-            this.tabPage4.TabIndex = 1;
-            this.tabPage4.Text = "FileManager";
-            this.tabPage4.UseVisualStyleBackColor = true;
-            // 
-            // sendMsg
-            // 
-            this.sendMsg.Font = new System.Drawing.Font("Times New Roman", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.sendMsg.Location = new System.Drawing.Point(602, 39);
-            this.sendMsg.Name = "sendMsg";
-            this.sendMsg.Size = new System.Drawing.Size(135, 23);
-            this.sendMsg.TabIndex = 38;
-            this.sendMsg.Text = "Send";
-            this.sendMsg.UseVisualStyleBackColor = true;
-            this.sendMsg.Click += new System.EventHandler(this.sendMsg_Click);
-            // 
-            // chooseFilebtn
-            // 
-            this.chooseFilebtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.chooseFilebtn.Font = new System.Drawing.Font("Times New Roman", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.chooseFilebtn.Location = new System.Drawing.Point(6, 6);
-            this.chooseFilebtn.Name = "chooseFilebtn";
-            this.chooseFilebtn.Size = new System.Drawing.Size(105, 29);
-            this.chooseFilebtn.TabIndex = 41;
-            this.chooseFilebtn.Text = "Choose file";
-            this.chooseFilebtn.UseVisualStyleBackColor = true;
-            this.chooseFilebtn.Click += new System.EventHandler(this.chooseFilebtn_Click);
-            // 
-            // fileNameTextbox
-            // 
-            this.fileNameTextbox.Enabled = false;
-            this.fileNameTextbox.Font = new System.Drawing.Font("Times New Roman", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.fileNameTextbox.Location = new System.Drawing.Point(6, 38);
-            this.fileNameTextbox.Name = "fileNameTextbox";
-            this.fileNameTextbox.Size = new System.Drawing.Size(605, 25);
-            this.fileNameTextbox.TabIndex = 42;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -414,16 +412,16 @@
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
-            this.tabPage2.ResumeLayout(false);
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             this.tabControl2.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
             this.tabPage4.ResumeLayout(false);
             this.tabPage4.PerformLayout();
+            this.tabPage2.ResumeLayout(false);
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
 
         }

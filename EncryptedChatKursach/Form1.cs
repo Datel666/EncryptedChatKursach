@@ -74,7 +74,7 @@ namespace EncryptedChatKursach
                     if (status)
                     {
                         connectButton.Text = "Disconnect";
-                        LogWrite("[/ You are now connected /]");
+                        LogWrite($"[/ You are now connected as {nickTextbox.Text} /]");
                         TaskSend(nickTextbox.Text);
                         
                     }
@@ -112,43 +112,49 @@ namespace EncryptedChatKursach
                     }
                     else
                     {
+                        string tempostring = obj.data.ToString();
+                        bool kek = tempostring.Contains("File");
                         if (obj.data.ToString().Contains("connected") || obj.data.ToString().Contains("Client"))
                         {
                             LogWrite(obj.data.ToString());
                         }
-                        else if (obj.data.ToString().Contains("File"))
+                        
+                        else if (kek)
                         {
-                            MessageBox.Show("я тут");
-                            byte[] check = Encoding.UTF8.GetBytes(obj.data.ToString());
-                            string temp = obj.data.ToString().Remove(0, 4);
-                            string extension = temp.Substring(temp.Length - 3);
-                            temp.Remove(temp.Length - 4);
-                            byte[] filebuffer = Encoding.UTF8.GetBytes(temp);
-                            LogWrite(filebuffer.Length.ToString());
+                            string fullb64message = obj.data.ToString();
+                            int extlenght = fullb64message.IndexOf("File");
+                            string extension = fullb64message.Substring(0, extlenght);
+                            string temp = fullb64message.Remove(0, extension.Length + 4);
+                            byte[] utf8bytes = Encoding.UTF8.GetBytes(temp);
+                            string utf8stringwhy = Encoding.UTF8.GetString(utf8bytes);
+                            string decodedmsg = Encryption.Decrypt(utf8stringwhy, passwordTextbox.Text);
+                            byte[] check = Convert.FromBase64String(decodedmsg);
+
                             file filee = new file();
-                            filee.value = filebuffer;
+                            filee.value = check;
                             filee.extension = extension;
                             files.TryAdd(filescount,filee);
                             this.filesList.BeginInvoke((MethodInvoker)(() => this.filesList.Items.Add($"{extension} File")));
+                            LogWrite("[System]: new file arrived, double click on it to perform local save.");
                             
                         }
                         else
                         {
                             if(obj.data.ToString().Contains("Server"))
                             {
-                                MessageBox.Show("я тут2");
+                               
                                 LogWrite(obj.data.ToString().Split(':')[0] + ": " + obj.data.ToString().Split(':')[1]);
                             }
                             else 
                             {
                                 if (aesRadio.Checked)
                                 {
-                                    MessageBox.Show("я тут3");
+                                    
                                     string[] parts = obj.data.ToString().Split(':');
                                     byte[] buffer;
                                     buffer = Encoding.UTF8.GetBytes(parts[1]);
-                                    string kek = Encoding.UTF8.GetString(buffer);
-                                    LogWrite(parts[0] + ": " + Encryption.Decrypt(kek, passwordTextbox.Text));
+                                    string keko = Encoding.UTF8.GetString(buffer);
+                                    LogWrite(parts[0] + ": " + Encryption.Decrypt(keko, passwordTextbox.Text));
                                 }
                                 
                             }
@@ -220,10 +226,42 @@ namespace EncryptedChatKursach
             }
         }
 
+        private void Send(string msg,bool flag)
+        {
+            byte[] buffer;
+            
+            buffer = Encoding.UTF8.GetBytes(msg);
+            
+            if (obj.client.Connected)
+            {
+                try
+                {
+                    obj.stream.BeginWrite(buffer, 0, buffer.Length, new AsyncCallback(Write), null);
+                }
+                catch (Exception ex)
+                {
+                    LogWrite(string.Format("[/ {0} /]", ex.Message));
+                }
+            }
+        }
+        
+
+        private void TaskSend(string msg,bool file)
+        {
+            if (send == null || send.IsCompleted)
+            {
+                send = Task.Factory.StartNew(() => Send(msg,file));
+            }
+            else
+            {
+                send.ContinueWith(antecendent => Send(msg,file));
+            }
+        }
+
         private void Send(string msg)
         {
             byte[] buffer;
-            if (nickflag ==false)
+            if (nickflag == false)
             {
                 temps = nickTextbox.Text;
                 nickflag = true;
@@ -236,9 +274,9 @@ namespace EncryptedChatKursach
                 }
 
             }
-            
+
             buffer = Encoding.UTF8.GetBytes(temps);
-            
+
             if (obj.client.Connected)
             {
                 try
@@ -252,30 +290,6 @@ namespace EncryptedChatKursach
             }
         }
 
-        private void Send(byte[] msg,string ext)
-        {
-            byte[] extension = Encoding.UTF8.GetBytes(ext);
-            byte[] mark = Encoding.UTF8.GetBytes("File");
-            byte[] buffer = new byte[mark.Length + msg.Length + extension.Length];
-            Buffer.BlockCopy(mark, 0, buffer, 0, mark.Length);
-            Buffer.BlockCopy(msg, 0, buffer, mark.Length, msg.Length);
-            Buffer.BlockCopy(extension, 0, buffer, mark.Length + msg.Length, extension.Length);
-            LogWrite(buffer.Length.ToString());
-            string check = Encoding.UTF8.GetString(buffer);
-            byte[] chekkk = Encoding.UTF8.GetBytes(check);
-            LogWrite(chekkk.Length.ToString());
-            if (obj.client.Connected)
-            {
-                try
-                {
-                    obj.stream.BeginWrite(buffer, 0, buffer.Length, new AsyncCallback(Write), null);
-                }
-                catch (Exception ex)
-                {
-                    LogWrite(string.Format("[/ {0} /]", ex.Message));
-                }
-            }
-        }
 
         private void TaskSend(string msg)
         {
@@ -286,18 +300,6 @@ namespace EncryptedChatKursach
             else
             {
                 send.ContinueWith(antecendent => Send(msg));
-            }
-        }
-
-        private void TaskSend(byte[] msg,string ext)
-        {
-            if (send == null || send.IsCompleted)
-            {
-                send = Task.Factory.StartNew(() => Send(msg,ext));
-            }
-            else
-            {
-                send.ContinueWith(antecendent => Send(msg,ext));
             }
         }
 
@@ -381,18 +383,19 @@ namespace EncryptedChatKursach
 
        
 
-        private void sendTextBox_MouseClick(object sender, MouseEventArgs e)
-        {
-            sendTextBox.Text = "";
-        }
+        
 
         private void sendFile_Click(object sender, EventArgs e)
         {
             if (fileNameTextbox.Text != "")
             {
+                bool flag = true;
                 byte[] msg = File.ReadAllBytes(fileNameTextbox.Text);
                 string ext = Path.GetExtension(fileNameTextbox.Text);
-                TaskSend(msg, ext);
+                string tempmessage = Convert.ToBase64String(msg);
+                string encodedpart = Encryption.Encrypt(tempmessage, passwordTextbox.Text);
+                string encodedmessage = ext + "File" + encodedpart;
+                TaskSend(encodedmessage,flag);
                 
             }
             else
@@ -402,10 +405,6 @@ namespace EncryptedChatKursach
             
         }
 
-        private void sendTextBox_TextChanged(object sender, EventArgs e)
-        {
-            sendTextBox.Text = "Enter message...";
-        }
 
         private void sendMsg_Click(object sender, EventArgs e)
         {
@@ -451,29 +450,42 @@ namespace EncryptedChatKursach
 
         private void filesList_DoubleClick(object sender, EventArgs e)
         {
-            if (selectedfile != -1)
+            try
             {
-                using (SaveFileDialog sfd = new SaveFileDialog())
+                if (selectedfile != -1)
                 {
-                    DialogResult sfdresult = sfd.ShowDialog();
-                    if (sfdresult == DialogResult.OK)
+                    using (SaveFileDialog sfd = new SaveFileDialog())
                     {
-                        if (sfd.FileName != "" || sfd.FileName != null)
+                        sfd.Filter = $"(*{files[selectedfile].extension})|*{files[selectedfile].extension}";
+                        DialogResult sfdresult = sfd.ShowDialog();
+                        if (sfdresult == DialogResult.OK)
                         {
-                            try
+                            if (sfd.FileName != "" || sfd.FileName != null)
                             {
-                                File.WriteAllBytes(sfd.FileName + "." + files[selectedfile].extension, files[selectedfile].value);
-                            }
-                            catch(Exception exx)
-                            {
-                                LogWrite(String.Format("[/ {0} /]", exx.Message));
+                                try
+                                {
+                                    File.WriteAllBytes(sfd.FileName + files[selectedfile].extension, files[selectedfile].value);
+                                }
+                                catch (Exception exx)
+                                {
+                                    LogWrite(String.Format("[/ {0} /]", exx.Message));
+                                }
                             }
                         }
                     }
                 }
             }
+            catch
+            {
+                MessageBox.Show("No files to save found", "Error");
+            }
+
         }
 
-        
+        private void clearFilesList_Click(object sender, EventArgs e)
+        {
+            files.Clear();
+            filesList.Items.Clear();
+        }
     }
 }
