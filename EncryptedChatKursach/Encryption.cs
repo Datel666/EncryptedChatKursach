@@ -94,6 +94,39 @@ namespace EncryptedChatKursach
             }
         }
 
+        public async static Task<string> RSAencrypt(string data, string pubkey)
+        {
+            var csp = new RSACryptoServiceProvider(4096);
+            csp.FromXmlString(pubkey);
+            var TextBytes = Encoding.UTF8.GetBytes(data);
+            var encodedTextBytes = await Task.Run(() => (csp.Encrypt(TextBytes, false)));
+            var b64text = Convert.ToBase64String(encodedTextBytes);
+            return b64text;
+        }
+
+        public async static Task<string> RSAdecrypt(string data, string privkey)
+        {
+            var csp = new RSACryptoServiceProvider(4096);
+            csp.FromXmlString(privkey);
+            var TextBytes = Convert.FromBase64String(data);
+            var decodedTextBytes = await Task.Run(() => (csp.Decrypt(TextBytes, false)));
+            var b64text = Encoding.UTF8.GetString(decodedTextBytes);
+            return b64text;
+        }
+
+        
+        public async static Task<(string,string)> RSAkeygen()
+        {
+            var csp = new RSACryptoServiceProvider(4096);
+            var privKey = await Task.Run(() => (csp.ExportParameters(true)));
+            var pubKey = await Task.Run(() => (csp.ExportParameters(false)));
+            string pub = csp.ToXmlString(false);
+            string priv = csp.ToXmlString(true);
+            return (pub, priv);
+
+        }
+
+
         private static byte[] Generate128BitsOfRandomEntropy()
         {
             var randomBytes = new byte[16]; // 16 Bytes will give us 128 bits.

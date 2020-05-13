@@ -32,7 +32,7 @@ namespace EncryptedChatServer
         
         private Thread disconnect = null;
         private bool exit = false;
-        string temps;
+        
         
 
         public Form1()

@@ -48,16 +48,23 @@
             this.clearButton = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.destinationPubKey = new System.Windows.Forms.TextBox();
+            this.copyKeyBtn = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.passwordTextbox = new System.Windows.Forms.TextBox();
-            this.radioButton3 = new System.Windows.Forms.RadioButton();
+            this.keysgeneratorBtn = new System.Windows.Forms.Button();
+            this.rsaRadio = new System.Windows.Forms.RadioButton();
             this.aesRadio = new System.Windows.Forms.RadioButton();
-            this.defaultRadio = new System.Windows.Forms.RadioButton();
+            this.noencryptionRadio = new System.Windows.Forms.RadioButton();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.addressTextbox = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.backgroundWorker2 = new System.ComponentModel.BackgroundWorker();
+            this.infoTextbox = new System.Windows.Forms.TextBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabControl2.SuspendLayout();
@@ -65,6 +72,7 @@
             this.tabPage4.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            this.groupBox3.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -297,45 +305,103 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.label4);
-            this.groupBox2.Controls.Add(this.passwordTextbox);
-            this.groupBox2.Controls.Add(this.radioButton3);
+            this.groupBox2.Controls.Add(this.groupBox3);
+            this.groupBox2.Controls.Add(this.rsaRadio);
             this.groupBox2.Controls.Add(this.aesRadio);
-            this.groupBox2.Controls.Add(this.defaultRadio);
+            this.groupBox2.Controls.Add(this.noencryptionRadio);
             this.groupBox2.Location = new System.Drawing.Point(6, 133);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(235, 258);
+            this.groupBox2.Size = new System.Drawing.Size(572, 321);
             this.groupBox2.TabIndex = 35;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Safety";
             // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.infoTextbox);
+            this.groupBox3.Controls.Add(this.label5);
+            this.groupBox3.Controls.Add(this.destinationPubKey);
+            this.groupBox3.Controls.Add(this.copyKeyBtn);
+            this.groupBox3.Controls.Add(this.label4);
+            this.groupBox3.Controls.Add(this.passwordTextbox);
+            this.groupBox3.Controls.Add(this.keysgeneratorBtn);
+            this.groupBox3.Location = new System.Drawing.Point(6, 130);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(537, 185);
+            this.groupBox3.TabIndex = 36;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Encryption keys management";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(6, 104);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(179, 21);
+            this.label5.TabIndex = 36;
+            this.label5.Text = "Set destination pubkey";
+            // 
+            // destinationPubKey
+            // 
+            this.destinationPubKey.Location = new System.Drawing.Point(6, 128);
+            this.destinationPubKey.MaxLength = 0;
+            this.destinationPubKey.Name = "destinationPubKey";
+            this.destinationPubKey.Size = new System.Drawing.Size(333, 29);
+            this.destinationPubKey.TabIndex = 7;
+            // 
+            // copyKeyBtn
+            // 
+            this.copyKeyBtn.Enabled = false;
+            this.copyKeyBtn.Location = new System.Drawing.Point(4, 66);
+            this.copyKeyBtn.Name = "copyKeyBtn";
+            this.copyKeyBtn.Size = new System.Drawing.Size(278, 32);
+            this.copyKeyBtn.TabIndex = 6;
+            this.copyKeyBtn.Text = "Copy your public key to clipboard";
+            this.copyKeyBtn.UseVisualStyleBackColor = true;
+            this.copyKeyBtn.Visible = false;
+            this.copyKeyBtn.Click += new System.EventHandler(this.copyKeyBtn_Click);
+            // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(6, 144);
+            this.label4.Location = new System.Drawing.Point(6, 35);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(168, 21);
+            this.label4.Size = new System.Drawing.Size(211, 21);
             this.label4.TabIndex = 4;
-            this.label4.Text = "Enter encryption Key";
+            this.label4.Text = "Enter AES encryption pass";
             // 
             // passwordTextbox
             // 
-            this.passwordTextbox.Location = new System.Drawing.Point(6, 168);
+            this.passwordTextbox.Location = new System.Drawing.Point(6, 59);
+            this.passwordTextbox.MaxLength = 0;
             this.passwordTextbox.Name = "passwordTextbox";
-            this.passwordTextbox.Size = new System.Drawing.Size(207, 29);
+            this.passwordTextbox.Size = new System.Drawing.Size(211, 29);
             this.passwordTextbox.TabIndex = 3;
             this.passwordTextbox.Text = "pepe";
             // 
-            // radioButton3
+            // keysgeneratorBtn
             // 
-            this.radioButton3.AutoSize = true;
-            this.radioButton3.Location = new System.Drawing.Point(10, 99);
-            this.radioButton3.Name = "radioButton3";
-            this.radioButton3.Size = new System.Drawing.Size(140, 25);
-            this.radioButton3.TabIndex = 2;
-            this.radioButton3.TabStop = true;
-            this.radioButton3.Text = "Something else";
-            this.radioButton3.UseVisualStyleBackColor = true;
+            this.keysgeneratorBtn.Enabled = false;
+            this.keysgeneratorBtn.Location = new System.Drawing.Point(4, 31);
+            this.keysgeneratorBtn.Name = "keysgeneratorBtn";
+            this.keysgeneratorBtn.Size = new System.Drawing.Size(175, 29);
+            this.keysgeneratorBtn.TabIndex = 5;
+            this.keysgeneratorBtn.Text = "Generate RSA keys";
+            this.keysgeneratorBtn.UseVisualStyleBackColor = true;
+            this.keysgeneratorBtn.Visible = false;
+            this.keysgeneratorBtn.Click += new System.EventHandler(this.keysgeneratorBtn_Click);
+            // 
+            // rsaRadio
+            // 
+            this.rsaRadio.AutoSize = true;
+            this.rsaRadio.Location = new System.Drawing.Point(10, 99);
+            this.rsaRadio.Name = "rsaRadio";
+            this.rsaRadio.Size = new System.Drawing.Size(148, 25);
+            this.rsaRadio.TabIndex = 2;
+            this.rsaRadio.TabStop = true;
+            this.rsaRadio.Text = "RSA encryption";
+            this.rsaRadio.UseVisualStyleBackColor = true;
+            this.rsaRadio.CheckedChanged += new System.EventHandler(this.rsaRadio_CheckedChanged);
             // 
             // aesRadio
             // 
@@ -348,17 +414,19 @@
             this.aesRadio.TabStop = true;
             this.aesRadio.Text = "AES encryption";
             this.aesRadio.UseVisualStyleBackColor = true;
+            this.aesRadio.CheckedChanged += new System.EventHandler(this.aesRadio_CheckedChanged);
             // 
-            // defaultRadio
+            // noencryptionRadio
             // 
-            this.defaultRadio.AutoSize = true;
-            this.defaultRadio.Location = new System.Drawing.Point(10, 37);
-            this.defaultRadio.Name = "defaultRadio";
-            this.defaultRadio.Size = new System.Drawing.Size(135, 25);
-            this.defaultRadio.TabIndex = 0;
-            this.defaultRadio.TabStop = true;
-            this.defaultRadio.Text = "No encryption";
-            this.defaultRadio.UseVisualStyleBackColor = true;
+            this.noencryptionRadio.AutoSize = true;
+            this.noencryptionRadio.Location = new System.Drawing.Point(10, 37);
+            this.noencryptionRadio.Name = "noencryptionRadio";
+            this.noencryptionRadio.Size = new System.Drawing.Size(135, 25);
+            this.noencryptionRadio.TabIndex = 0;
+            this.noencryptionRadio.TabStop = true;
+            this.noencryptionRadio.Text = "No encryption";
+            this.noencryptionRadio.UseVisualStyleBackColor = true;
+            this.noencryptionRadio.CheckedChanged += new System.EventHandler(this.noencryptionRadio_CheckedChanged);
             // 
             // groupBox1
             // 
@@ -400,6 +468,15 @@
             this.label2.TabIndex = 34;
             this.label2.Text = "Address";
             // 
+            // infoTextbox
+            // 
+            this.infoTextbox.Enabled = false;
+            this.infoTextbox.Location = new System.Drawing.Point(284, 32);
+            this.infoTextbox.Name = "infoTextbox";
+            this.infoTextbox.Size = new System.Drawing.Size(247, 29);
+            this.infoTextbox.TabIndex = 37;
+            this.infoTextbox.Visible = false;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -420,6 +497,8 @@
             this.tabPage2.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
@@ -444,9 +523,9 @@
         private System.Windows.Forms.Button clearButton;
         private System.Windows.Forms.TextBox nickTextbox;
         private System.Windows.Forms.Button connectButton;
-        private System.Windows.Forms.RadioButton radioButton3;
+        private System.Windows.Forms.RadioButton rsaRadio;
         private System.Windows.Forms.RadioButton aesRadio;
-        private System.Windows.Forms.RadioButton defaultRadio;
+        private System.Windows.Forms.RadioButton noencryptionRadio;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox passwordTextbox;
         private System.Windows.Forms.Button clearFilesList;
@@ -458,6 +537,13 @@
         private System.Windows.Forms.TabPage tabPage4;
         private System.Windows.Forms.TextBox fileNameTextbox;
         private System.Windows.Forms.Button chooseFilebtn;
+        private System.Windows.Forms.Button copyKeyBtn;
+        private System.Windows.Forms.Button keysgeneratorBtn;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.ComponentModel.BackgroundWorker backgroundWorker2;
+        private System.Windows.Forms.TextBox destinationPubKey;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.TextBox infoTextbox;
     }
 }
 

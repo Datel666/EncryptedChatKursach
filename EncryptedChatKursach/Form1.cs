@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using System.Collections.Concurrent;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Windows;
+using System.Security.Cryptography;
 
 
 namespace EncryptedChatKursach
@@ -16,8 +15,7 @@ namespace EncryptedChatKursach
     public partial class Form1 : Form
     {
 
-        private bool connected = false;
-        private Thread client = null;
+        
         private struct MyClient
         {
             public TcpClient client;
@@ -31,14 +29,21 @@ namespace EncryptedChatKursach
             public byte[] value;
             public string extension;
         }
-        public int selectedfile = -1;
+
+        private bool connected = false;
+        private Thread client = null;
         private MyClient obj;
         private Task send = null;
         private bool exit = false;
-        public bool nickflag = false;
         private string temps;
+        private string pubkey;
+        private string privkey;
         private ConcurrentDictionary<long, file> files = new ConcurrentDictionary<long, file>();
+
+        public bool nickflag = false;
+        public int selectedfile = -1;
         public long filescount = 0;
+
         public Form1()
         {
             InitializeComponent();
@@ -115,13 +120,13 @@ namespace EncryptedChatKursach
                     else
                     {
                         string tempostring = obj.data.ToString();
-                        bool kek = tempostring.Contains("File");
+                        bool fileFlag = tempostring.Contains("File");
                         if (obj.data.ToString().Contains("connected") || obj.data.ToString().Contains("Client"))
                         {
                             LogWrite(obj.data.ToString());
                         }
                         
-                        else if (kek)
+                        else if (fileFlag)
                         {
                             string fullb64message = obj.data.ToString();
                             int extlenght = fullb64message.IndexOf("File");
@@ -129,16 +134,64 @@ namespace EncryptedChatKursach
                             string temp = fullb64message.Remove(0, extension.Length + 4);
                             byte[] utf8bytes = Encoding.UTF8.GetBytes(temp);
                             string utf8stringwhy = Encoding.UTF8.GetString(utf8bytes);
-                            string decodedmsg = await Encryption.Decrypt(utf8stringwhy, passwordTextbox.Text);
-                            byte[] check = Convert.FromBase64String(decodedmsg);
-
-                            file filee = new file();
-                            filee.value = check;
-                            filee.extension = extension;
-                            files.TryAdd(filescount,filee);
-                            filescount++;
-                            this.filesList.BeginInvoke((MethodInvoker)(() => this.filesList.Items.Add($"{extension} File")));
-                            LogWrite("[System]: new file arrived, double click on it to perform local save.");
+                            string decodedmsg;
+                            byte[] check;
+                            if (aesRadio.Checked)
+                            {
+                                try
+                                {
+                                    decodedmsg = await Encryption.Decrypt(utf8stringwhy, passwordTextbox.Text);
+                                    check = Convert.FromBase64String(decodedmsg);
+                                    file filee = new file();
+                                    filee.value = check;
+                                    filee.extension = extension;
+                                    files.TryAdd(filescount, filee);
+                                    filescount++;
+                                    this.filesList.BeginInvoke((MethodInvoker)(() => this.filesList.Items.Add($"{extension} File")));
+                                    LogWrite("[System ]: New file arrived, double click on it to perform local save.");
+                                }
+                                catch
+                                {
+                                    LogWrite("[System ]: File decrypting failure. You cant decrypt this message using current AES keyword.");
+                                }
+                            }
+                            else if (rsaRadio.Checked)
+                            {
+                                try
+                                {
+                                    decodedmsg = await Encryption.RSAdecrypt(utf8stringwhy, privkey);
+                                    check = Convert.FromBase64String(decodedmsg);
+                                    file filee = new file();
+                                    filee.value = check;
+                                    filee.extension = extension;
+                                    files.TryAdd(filescount, filee);
+                                    filescount++;
+                                    this.filesList.BeginInvoke((MethodInvoker)(() => this.filesList.Items.Add($"{extension} File")));
+                                    LogWrite("[System ]: New file arrived, double click on it to perform local save.");
+                                }
+                                catch
+                                {
+                                    LogWrite("[System ]: File decrypting failure. You cant decrypt this message using your RSA private key.");
+                                }
+                            }
+                            else if (noencryptionRadio.Checked)
+                            {
+                                try
+                                {
+                                    check = Convert.FromBase64String(utf8stringwhy);
+                                    file filee = new file();
+                                    filee.value = check;
+                                    filee.extension = extension;
+                                    files.TryAdd(filescount, filee);
+                                    filescount++;
+                                    this.filesList.BeginInvoke((MethodInvoker)(() => this.filesList.Items.Add($"{extension} File")));
+                                    LogWrite("[System ]: New file arrived, double click on it to perform local save.");
+                                }
+                                catch
+                                {
+                                    LogWrite("[System ]: Unknown exception during file reading. Cant believe this even possible.");
+                                }
+                            }
                             
                         }
                         else
@@ -152,12 +205,45 @@ namespace EncryptedChatKursach
                             {
                                 if (aesRadio.Checked)
                                 {
-                                    
-                                    string[] parts = obj.data.ToString().Split(':');
-                                    byte[] buffer;
-                                    buffer = Encoding.UTF8.GetBytes(parts[1]);
-                                    string keko = Encoding.UTF8.GetString(buffer);
-                                    LogWrite(parts[0] + ": " + Encryption.Decrypt(keko, passwordTextbox.Text));
+                                    try
+                                    {
+                                        string[] parts = obj.data.ToString().Split(':');
+                                        byte[] buffer;
+                                        buffer = Encoding.UTF8.GetBytes(parts[1]);
+                                        string keko = Encoding.UTF8.GetString(buffer);
+                                        LogWrite(parts[0] + ": " + await Encryption.Decrypt(keko, passwordTextbox.Text));
+                                    }
+                                    catch
+                                    {
+                                        LogWrite("[System]: Message decrypting error. You cant decrypt this message using current AES keyword.");
+                                    }
+                                }
+                                if (rsaRadio.Checked)
+                                {
+                                    try
+                                    {
+                                        string[] parts = obj.data.ToString().Split(':');
+                                        byte[] buffer;
+                                        buffer = Encoding.UTF8.GetBytes(parts[1]);
+                                        string keko = Encoding.UTF8.GetString(buffer);
+                                        LogWrite(parts[0] + ": " + Encryption.RSAdecrypt(keko, privkey));
+                                    }
+                                    catch
+                                    {
+                                        LogWrite("[System]: Message decryption error. You cant decrypt this message using your RSA private key.");
+                                    }
+                                }
+                                if(noencryptionRadio.Checked)
+                                {
+                                    try
+                                    {
+                                        string[] parts = obj.data.ToString().Split(':');
+                                        LogWrite(parts[0] + ": " + parts[1]);
+                                    }
+                                    catch
+                                    {
+                                        LogWrite("[System]: Unknown exception during message reading. Cant believe this even possible.");
+                                    }
                                 }
                                 
                             }
@@ -273,24 +359,76 @@ namespace EncryptedChatKursach
             {
                 if (aesRadio.Checked)
                 {
-                    temps = await Encryption.Encrypt(msg, passwordTextbox.Text);
+                    if (passwordTextbox.Text != "")
+                    {
+                        try
+                        {
+                            temps = await Encryption.Encrypt(msg, passwordTextbox.Text);
+                        }
+                        catch
+                        {
+                            LogWrite("[System]: Message sending failure. Cant encrypt message using AES keyword.");
+                        }
+                    }
+                    else
+                    {
+                        LogWrite("[System]: Message sending failure. AES keyword is not set.");
+                        return;
+                    }
+                    
+                }
+                else if (rsaRadio.Checked)
+                {
+                    if (destinationPubKey.Text != "")
+                    {
+                        try
+                        {
+                            LogWrite("я тут");
+                            temps = await Encryption.RSAencrypt(msg, destinationPubKey.Text);
+                        }
+                        catch
+                        {
+                            LogWrite("[System]: Message sending failure. Message is too long or RSA Destination public key is not valid.");
+                        }
+                    }
+                    else
+                    {
+                        LogWrite("[System]: Message sending failure. RSA Destination public key is not set.");
+                        return;
+                    }
+                }
+                else if (noencryptionRadio.Checked)
+                {
+                    try
+                    {
+                        temps = msg;
+                    }
+                    catch
+                    {
+                        LogWrite("[System]: Message sending failure. Unknown error.");
+                        return;
+                    }
                 }
 
             }
 
-            buffer = Encoding.UTF8.GetBytes(temps);
-
-            if (obj.client.Connected)
+            if (temps != null)
             {
-                try
+                buffer = Encoding.UTF8.GetBytes(temps);
+                temps = null;
+                if (obj.client.Connected)
                 {
-                    obj.stream.BeginWrite(buffer, 0, buffer.Length, new AsyncCallback(Write), null);
-                }
-                catch (Exception ex)
-                {
-                    LogWrite(string.Format("[/ {0} /]", ex.Message));
+                    try
+                    {
+                        obj.stream.BeginWrite(buffer, 0, buffer.Length, new AsyncCallback(Write), null);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogWrite(string.Format("[/ {0} /]", ex.Message));
+                    }
                 }
             }
+            
         }
 
 
@@ -400,13 +538,71 @@ namespace EncryptedChatKursach
                     {
                         msg = new byte[stream.Length];
                         await stream.ReadAsync(msg, 0, (int)stream.Length);
-                        string ext = Path.GetExtension(fileNameTextbox.Text);
                         string tempmessage = Convert.ToBase64String(msg);
-                        string encodedpart = await Encryption.Encrypt(tempmessage, passwordTextbox.Text);
-                        string encodedmessage = ext + "File" + encodedpart;
-                        TaskSend(encodedmessage, flag);
-                        fileNameTextbox.Text = "";
-                        LogWrite("[System]: sending file...");
+                        string encodedpart;
+                        if (aesRadio.Checked ==true)
+                        {
+                            if (passwordTextbox.Text != "")
+                            {
+                                try
+                                {
+                                    encodedpart = await Encryption.Encrypt(tempmessage, passwordTextbox.Text);
+                                    string ext = Path.GetExtension(fileNameTextbox.Text);
+                                    string encodedmessage = ext + "File" + encodedpart;
+                                    TaskSend(encodedmessage, flag);
+                                    fileNameTextbox.Text = "";
+                                    LogWrite("[System]: sending file...");
+                                }
+                                catch
+                                {
+                                    LogWrite("[System]: File sending failure. Cant encrypt message using current AES keyword.");
+                                }
+                            }
+                            else
+                            {
+                                LogWrite("[System]: File sending failure. AES keyword is not set.");
+                                return;
+                            }
+                        }
+                        else if (rsaRadio.Checked ==true)
+                        {
+                            if (destinationPubKey.Text != "")
+                            {
+                                try
+                                {
+                                    encodedpart = await Encryption.RSAencrypt(tempmessage,destinationPubKey.Text);
+                                    string ext = Path.GetExtension(fileNameTextbox.Text);
+                                    string encodedmessage = ext + "File" + encodedpart;
+                                    TaskSend(encodedmessage, flag);
+                                    fileNameTextbox.Text = "";
+                                    LogWrite("[System]: sending file...");
+                                }
+                                catch(Exception ex)
+                                {
+                                   LogWrite("[System]: File sending failure. File is too big or RSA destination public key is not valid.");
+                                }
+                            }
+                            else
+                            {
+                                LogWrite("[System]: File sending failure. RSA Destination public key is not set.");
+                                return;
+                            }
+                        }
+                        else if (noencryptionRadio.Checked ==true)
+                        {
+                            try
+                            {
+                                string ext = Path.GetExtension(fileNameTextbox.Text);
+                                string encodedmessage = ext + "File" + tempmessage;
+                                TaskSend(encodedmessage, flag);
+                                fileNameTextbox.Text = "";
+                                LogWrite("[System]: sending file...");
+                            }
+                            catch
+                            {
+                                LogWrite("[System]: File sending failure. Unknown error.");
+                            }
+                        }
                     } 
                 }
                 else
@@ -510,6 +706,100 @@ namespace EncryptedChatKursach
             files.Clear();
             filesList.Items.Clear();
             filescount = 0;
+        }
+
+        private void noencryptionRadio_CheckedChanged(object sender, EventArgs e)
+        {
+            if (noencryptionRadio.Checked)
+            {
+                copyKeyBtn.Visible = false;
+                copyKeyBtn.Enabled = false;
+
+                keysgeneratorBtn.Visible = false;
+                keysgeneratorBtn.Enabled = false;
+
+                destinationPubKey.Visible = false;
+                destinationPubKey.Enabled = false;
+
+                infoTextbox.Visible = false;
+                infoTextbox.Enabled = false;
+
+                label5.Visible = false;
+                label4.Visible = false;
+
+                passwordTextbox.Visible = false;
+                passwordTextbox.Enabled = false;
+            }
+        }
+
+        private void aesRadio_CheckedChanged(object sender, EventArgs e)
+        {
+            if (aesRadio.Checked)
+            {
+                copyKeyBtn.Visible = false;
+                copyKeyBtn.Enabled = false;
+                keysgeneratorBtn.Visible = false;
+                keysgeneratorBtn.Enabled = false;
+                label5.Visible = false;
+                destinationPubKey.Visible = false;
+                destinationPubKey.Enabled = false;
+                infoTextbox.Visible = false;
+                infoTextbox.Enabled = false;
+
+                passwordTextbox.Visible = true;
+                passwordTextbox.Enabled = true;
+                label4.Visible = true;
+            }
+        }
+
+        private void rsaRadio_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rsaRadio.Checked)
+            {
+                passwordTextbox.Visible = false;
+                passwordTextbox.Enabled = false;
+                label4.Visible = false;
+
+                keysgeneratorBtn.Visible = true;
+                keysgeneratorBtn.Enabled = true;
+                copyKeyBtn.Visible = true;
+                copyKeyBtn.Enabled = true;
+                label5.Visible = true;
+                destinationPubKey.Visible = true;
+                destinationPubKey.Enabled = true;
+            }
+        }
+
+        private void copyKeyBtn_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (pubkey != null)
+                {
+                    Clipboard.Clear();
+                    Clipboard.SetText(pubkey);
+                    MessageBox.Show("Public key copied to your clipboard", "Info");
+                }
+                else
+                {
+                    MessageBox.Show("First u need to generate encryption keys");
+                }
+            }
+            catch
+            {
+                
+            }
+        }
+
+        private async void keysgeneratorBtn_Click(object sender, EventArgs e)
+        {
+            infoTextbox.Text = "Key generation in progress";
+            infoTextbox.Visible = true;
+            ValueTuple<string, string> tuple = new ValueTuple<string, string>();
+            tuple = await Encryption.RSAkeygen();
+            pubkey = tuple.Item1;
+            privkey = tuple.Item2;
+            infoTextbox.Text = "Keys are successfuly generated";
         }
     }
 }

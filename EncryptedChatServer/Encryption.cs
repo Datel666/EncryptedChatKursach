@@ -54,7 +54,6 @@ namespace EncryptedChatKursach
                 }
             }
         }
-
         public static string Decrypt(string cipherText, string passPhrase)
         {
             // Get the complete stream of bytes that represent:
@@ -93,6 +92,9 @@ namespace EncryptedChatKursach
                 }
             }
         }
+
+
+       
 
         private static byte[] Generate128BitsOfRandomEntropy()
         {
